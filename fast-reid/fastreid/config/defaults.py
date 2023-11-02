@@ -182,7 +182,7 @@ _C.DATALOADER.PK_SAMPLER = True
 _C.DATALOADER.NAIVE_WAY = False
 # Number of instance for each person
 _C.DATALOADER.NUM_INSTANCE = 4
-_C.DATALOADER.NUM_WORKERS = 8
+_C.DATALOADER.NUM_WORKERS = 0
 
 # ---------------------------------------------------------------------------- #
 # Solver

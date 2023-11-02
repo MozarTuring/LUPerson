@@ -10,7 +10,11 @@ from PIL import Image
 from torch.utils.data import Dataset
 
 from .data_utils import read_image
+import logging
 
+logger = logging.getLogger(__name__)
+
+import torchvision.transforms as T
 
 class CommDataset(Dataset):
     """Image Person ReID Dataset"""
@@ -38,7 +42,11 @@ class CommDataset(Dataset):
     def __getitem__(self, index):
         img_path, pid, camid = self.img_items[index]
         img = read_image(img_path)
-        if self.transform is not None: img = self.transform(img)
+#        logger.info(f"{img=}")
+#        logger.info(f"{self.transform}")
+#        import ipdb;ipdb.set_trace()
+        if self.transform is not None:
+            img = self.transform(img)
         if self.relabel:
             pid = self.pid_dict[pid]
             camid = self.cam_dict[camid]

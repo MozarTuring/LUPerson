@@ -78,7 +78,7 @@ class DatasetEvaluator:
 #         return results
 
 
-def inference_on_dataset(model, data_loader, evaluator):
+def inference_on_dataset(model, data_loader, evaluator, body_feature_obj=None):
     """
     Run model on the data_loader and evaluate the metrics with evaluator.
     The model will be used in eval mode.
@@ -106,12 +106,27 @@ def inference_on_dataset(model, data_loader, evaluator):
     total_compute_time = 0
     with inference_context(model), torch.no_grad():
         for idx, inputs in enumerate(data_loader):
+#            logger.info(f"{inputs=}")
             if idx == num_warmup:
                 start_time = time.perf_counter()
                 total_compute_time = 0
 
             start_compute_time = time.perf_counter()
-            outputs = model(inputs)
+            if body_feature_obj:
+                path_ls = list()
+                img_ls = list()
+                for tmp_ind in range(inputs["images"].shape[0]):
+                    tmp_output, tmp_inputs = body_feature_obj.run(inputs["img_paths"][tmp_ind], post=False)
+                    path_ls.append(torch.from_numpy(tmp_output))
+
+#                    hhh = inputs["images"][tmp_ind].numpy()
+#                    tmp_output, _ = body_feature_obj.run(hhh, pre=False, post=False)
+#                    logger.info(f"{hhh=}")
+#                    img_ls.append(torch.from_numpy(tmp_output))
+                outputs = torch.cat(path_ls, dim=0)
+#                img_outputs = torch.cat(img_ls, dim=0)
+            else:
+                outputs = model(inputs)
             total_compute_time += time.perf_counter() - start_compute_time
             evaluator.process(inputs, outputs)
 
@@ -144,6 +159,7 @@ def inference_on_dataset(model, data_loader, evaluator):
             total_compute_time_str, total_compute_time / (total - num_warmup)
         )
     )
+    import ipdb;ipdb.set_trace()
     results = evaluator.evaluate()
     # An evaluator may return None when not in main process.
     # Replace it by an empty dict instead to make it easier for downstream code to handle

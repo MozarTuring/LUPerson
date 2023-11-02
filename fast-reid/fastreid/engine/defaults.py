@@ -426,7 +426,7 @@ class DefaultTrainer(SimpleTrainer):
         return data_loader, ReidEvaluator(cfg, num_query, output_dir)
 
     @classmethod
-    def test(cls, cfg, model):
+    def test(cls, cfg, model, body_feature_obj=None):
         """
         Args:
             cfg (CfgNode):
@@ -447,7 +447,7 @@ class DefaultTrainer(SimpleTrainer):
                 )
                 results[dataset_name] = {}
                 continue
-            results_i = inference_on_dataset(model, data_loader, evaluator)
+            results_i = inference_on_dataset(model, data_loader, evaluator, body_feature_obj)
             results[dataset_name] = results_i
 
         if comm.is_main_process():

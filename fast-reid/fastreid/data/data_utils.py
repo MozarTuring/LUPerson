@@ -21,6 +21,7 @@ def read_image(file_name, format=None):
     """
     with PathManager.open(file_name, "rb") as f:
         image = Image.open(f)
+#        print(image.format) # output is jpeg
 
         # capture and ignore this bug: https://github.com/python-pillow/Pillow/issues/3973
         try:
@@ -41,5 +42,6 @@ def read_image(file_name, format=None):
         # PIL squeezes out the channel dimension for "L", so make it HWC
         if format == "L":
             image = np.expand_dims(image, -1)
+#        import ipdb;ipdb.set_trace()
         image = Image.fromarray(image)
         return image

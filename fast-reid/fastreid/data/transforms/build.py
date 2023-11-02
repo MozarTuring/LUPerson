@@ -67,5 +67,5 @@ def build_transforms(cfg, is_train=True):
     else:
         size_test = cfg.INPUT.SIZE_TEST
         res.append(T.Resize(size_test, interpolation=3))
-    res.append(ToTensor())
+    res.append(ToTensor()) # attention! it's not T.ToTensor()!!!
     return T.Compose(res)

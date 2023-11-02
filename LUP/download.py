@@ -16,14 +16,15 @@ def download_one_video(vid, save_dir, save_name=None):
     fpath = os.path.join(save_dir, save_name + '".%(ext)s"')
     if os.path.exists(fpath.replace('".%(ext)s"', '.mp4')):
         return
-    cmd = 'youtube-dl -o {:s} -f "bestvideo[ext=mp4][height<=?720][filesize<=500M]/best[height<=?720][filesize<=500M]" {:s}'.format(fpath, url)
+    print(url)
+    cmd = 'yt-dlp --verbose -o {:s} -f "bestvideo[ext=mp4][height<=?720][filesize<=500M]/best[height<=?720][filesize<=500M]" {:s}'.format(fpath, url)
     os.system(cmd)
 
 
 def parse_args():
     """ Parse input arguments """
     parser = argparse.ArgumentParser(description='download luperson raw videos')
-    parser.add_argument('-f',  '--vid_name_file',  type=str,  default='vname.txt')
+    parser.add_argument('-f',  '--vid_name_file',  type=str,  default='vnames.txt')
     parser.add_argument('-s',  '--save_dir',       type=str,  default='videos')
     args = parser.parse_args()
     return args
@@ -38,7 +39,7 @@ if __name__ == '__main__':
         lines = [line.strip() for line in lines]
     for item in tqdm(lines):
         country, city, vid = item.split('+')
-        save_dir = os.path.join(save_root, country, city)
-        if not os.path.exists(save_dir):
-            os.makedirs(save_dir)
-        download_one_video(vid, save_dir, save_name=item)
+#        save_dir = os.path.join(save_root, country, city)
+#        if not os.path.exists(save_dir):
+#            os.makedirs(save_dir)
+        download_one_video(vid, args.save_dir, save_name=item)

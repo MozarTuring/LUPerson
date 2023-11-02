@@ -1,4 +1,4 @@
-# encoding: utf-8
+#encoding: utf-8
 """
 @author:  l1aoxingyu
 @contact: sherlockliao01@gmail.com
@@ -14,6 +14,9 @@ from . import samplers
 from .common import CommDataset, LMDBDataset
 from .datasets import DATASET_REGISTRY
 from .transforms import build_transforms
+import logging
+
+logger = logging.getLogger(__name__)
 
 def parser_kwargs(additional_args):
     kwargs = {}
@@ -90,8 +93,8 @@ def build_reid_test_loader(cfg, dataset_name):
     if comm.is_main_process():
         dataset.show_test()
     test_items = dataset.query + dataset.gallery
-
     test_transforms = build_transforms(cfg, is_train=False)
+    logger.info(f"{test_transforms=}")
     test_set = CommDataset(test_items, test_transforms, relabel=False)
 
     mini_batch_size = cfg.TEST.IMS_PER_BATCH // comm.get_world_size()
@@ -100,7 +103,7 @@ def build_reid_test_loader(cfg, dataset_name):
     test_loader = DataLoader(
         test_set,
         batch_sampler=batch_sampler,
-        num_workers=4,  # save some memory
+        num_workers=0,  # save some memory
         collate_fn=fast_batch_collator,
         pin_memory=True,
     )
